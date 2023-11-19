@@ -1,0 +1,90 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+using namespace std;
+
+int function(int n, char str[])
+{
+
+    int *numbers = new int[n/2];  // в этом массиве первая часть чисел
+    int *numbers2 = new int[n-n/2];// в этом массиве вторая часть чисел
+    int counter=0;
+    int sum=0;
+
+    char *pch = strtok(str, " ");
+    while(pch)// раскидываем числа по двум массивам
+    {
+        if (counter<n/2) {
+            numbers[counter] = atoi(pch);
+
+        }
+        else {
+            numbers2[counter-n/2] = atoi(pch);
+        }
+        sum+=atoi(pch);
+        counter++;
+        pch = strtok(nullptr, " ");
+    }
+
+    int half = sum/2;
+
+    int *arrsum1=new int [int(pow(2,n/2))]; // здесь суммы для первой части
+    int *arrsum2=new int [int(pow(2,n-n/2))]; // суммы для второй части
+
+    counter=0;
+    sum=0;
+
+    // суммы для первой части
+    for (int i=0; i<n/2; i++){
+
+        sum+=numbers[i];
+        arrsum1[counter]=sum;
+        //cout<<sum<<endl;
+        counter++;
+
+        for (int j=i+1;j<n/2;j++){
+            if (j!=i+1){
+
+                arrsum1[counter]=numbers[i]+numbers[j];
+                //cout<<numbers[i]+numbers[j]<<endl;
+                counter++;
+            }
+
+            sum+=numbers[j];
+            arrsum1[counter]=sum;
+            //cout<<sum<<endl;
+            counter++;
+        }
+        sum=0;
+    }
+
+    // суммы для второй части - тот же алгоритм
+    int counter2=0;
+    for (int i=0; i<n-n/2; i++){
+        sum+=numbers2[i];
+        arrsum2[counter2]=sum;
+
+        counter++;
+        for (int j=i+1;j<n-n/2;j++){
+            if (j!=i+1){
+                arrsum2[counter2]=numbers2[i]+numbers2[j];
+
+                counter++;
+            }
+            sum+=numbers2[j];
+            arrsum2[counter2]=sum;
+
+            counter++;
+        }
+        sum=0;
+    }
+    delete [] numbers;
+    return 0;
+}
+
+int main()
+{
+
+    char ch[] = "1 2 3 4 5 6 7";
+    function(7, ch);
+}
