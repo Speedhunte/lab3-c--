@@ -1,90 +1,57 @@
 #include <iostream>
-#include <cstring>
-#include <cmath>
 using namespace std;
 
-int function(int n, char str[])
+int minDifference(int arr[], int n)
 {
+	int sum = 0;
+	for (int i = 0; i < n; i++)
+		sum += arr[i];
+	int y = sum / 2 + 1;
+	// dp[i] gives whether is it possible to get i as sum of
+	// elements dd is helper variable
+	// we use dd to ignoring duplicates
+	bool dp[y], dd[y];
 
-    int *numbers = new int[n/2];  // в этом массиве первая часть чисел
-    int *numbers2 = new int[n-n/2];// в этом массиве вторая часть чисел
-    int counter=0;
-    int sum=0;
+	// Initialising dp and dd
+	for (int i = 0; i < y; i++) {
+		dp[i] = dd[i] = false;
+	}
 
-    char *pch = strtok(str, " ");
-    while(pch)// раскидываем числа по двум массивам
-    {
-        if (counter<n/2) {
-            numbers[counter] = atoi(pch);
+	// sum = 0 is possible
+	dp[0] = true; // let dp array is used for storing
+				// previous values and dd array is used to
+				// store current values
+	for (int i = 0; i < n; i++) {
+		// updating dd[k] as true if k can be formed using
+		// elements from 1 to i+1
+		for (int j = 0; j + arr[i] < y; j++) {
+			if (dp[j])
+				dd[j + arr[i]] = true;
+		}
+		// updating dd
+		for (int j = 0; j < y; j++) {
+			if (dd[j])
+				dp[j] = true;
+			dd[j] = false; // reset dd
+		}
+	}
+	// checking the number from sum/2 to 1 which is possible
+	// to get as sum
 
-        }
-        else {
-            numbers2[counter-n/2] = atoi(pch);
-        }
-        sum+=atoi(pch);
-        counter++;
-        pch = strtok(nullptr, " ");
-    }
-
-    int half = sum/2;
-
-    int *arrsum1=new int [int(pow(2,n/2))]; // здесь суммы для первой части
-    int *arrsum2=new int [int(pow(2,n-n/2))]; // суммы для второй части
-
-    counter=0;
-    sum=0;
-
-    // суммы для первой части
-    for (int i=0; i<n/2; i++){
-
-        sum+=numbers[i];
-        arrsum1[counter]=sum;
-        //cout<<sum<<endl;
-        counter++;
-
-        for (int j=i+1;j<n/2;j++){
-            if (j!=i+1){
-
-                arrsum1[counter]=numbers[i]+numbers[j];
-                //cout<<numbers[i]+numbers[j]<<endl;
-                counter++;
-            }
-
-            sum+=numbers[j];
-            arrsum1[counter]=sum;
-            //cout<<sum<<endl;
-            counter++;
-        }
-        sum=0;
-    }
-
-    // суммы для второй части - тот же алгоритм
-    int counter2=0;
-    for (int i=0; i<n-n/2; i++){
-        sum+=numbers2[i];
-        arrsum2[counter2]=sum;
-
-        counter++;
-        for (int j=i+1;j<n-n/2;j++){
-            if (j!=i+1){
-                arrsum2[counter2]=numbers2[i]+numbers2[j];
-
-                counter++;
-            }
-            sum+=numbers2[j];
-            arrsum2[counter2]=sum;
-
-            counter++;
-        }
-        sum=0;
-    }
-    delete [] numbers;
-    return 0;
+	for (int i = y - 1; i >= 0; i--) {
+		if (dp[i])
+			return (sum - 2 * i);
+		// since i is possible to form then another number
+		// is sum-i
+		// so mindifference is sum-i-i
+	}
 }
-
 int main()
 {
 
-    char ch[] = "1 2 3 4 5 6 7";
-    function(7, ch);
+	int arr[] = { 1, 6, 11, 5 };
+	int n = sizeof(arr) / sizeof(arr[0]);
+	cout << "The Minimum difference of 2 sets is "
+		<< minDifference(arr, n) << '\n';
+	return 0;
 }
